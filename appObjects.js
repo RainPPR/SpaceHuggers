@@ -449,7 +449,7 @@ class Weapon extends EngineObject
         {
             // slow down enemy bullets
             const speed = bulletSpeed * (this.parent.isPlayer ? 1 : .5);
-            const rate = 1/(this.parent.isPlayer ? 1200 : 10);
+            const rate = 1/(this.parent.isPlayer ? 1200 : 50);
             for(; this.fireTimeBuffer > 0; this.fireTimeBuffer -= rate)
             {
                 this.localAngle = -rand(.2,.15);
@@ -482,7 +482,7 @@ class Bullet extends EngineObject
         this.lastVelocity = this.velocity;
         this.setCollision();
 
-        this.damage = 2000;
+        this.damage = 1;
         this.damping = 1;
         this.gravityScale = 0;
         this.attacker = attacker;
