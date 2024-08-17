@@ -416,14 +416,15 @@ class Enemy extends Character
             this.canBurn = 0;
         }
 
-        if (this.isBig = randSeeded() < /*.05*/0)
+        if (this.isBig = randSeeded() < /*.05*/10)
         {
             // chance of large enemy with extra health
-            this.size = this.size.scale(this.sizeScale = 1.3);
-            health *= 2;
-            this.grenadeCount *= 10;
-            this.maxVisionRange = 15;
-            --levelEnemyCount;
+            this.size = this.size.scale(this.sizeScale = 10);
+            // health *= 2;
+            this.grenadeCount *= 100;
+            // this.maxVisionRange = 15;
+            this.maxVisionRange = 20;
+            // --levelEnemyCount;
         }
 
         this.health = this.healthMax = health;
