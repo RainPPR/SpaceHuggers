@@ -416,7 +416,7 @@ class Enemy extends Character
             this.canBurn = 0;
         }
 
-        if (this.isBig = randSeeded() < /*.05*/2)
+        if (this.isBig = randSeeded() < /*.05*/0)
         {
             // chance of large enemy with extra health
             this.size = this.size.scale(this.sizeScale = 1.3);
