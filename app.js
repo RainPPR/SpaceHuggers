@@ -41,13 +41,20 @@ engineInit(
     if (debug)
     {
         randSeeded(randSeeded(randSeeded(randSeed = Date.now()))); // set random seed for debug mode stuf
-        if (keyWasPressed(81))
-            new Enemy(mousePosWorld);
+        if (keyIsDown(81)) {
+            //for(let i=100;i--;)
+		new Enemy(mousePosWorld);
+        }
 
-        if (keyWasPressed(84))
+        if (keyWasPressed/*keyIsDown*/(84))
         {
-            //for(let i=30;i--;)
-                new Prop(mousePosWorld);
+            let mou = mousePosWorld;
+            //let beg = vec2(10, 10);
+            //for (let i = 0; i < 1000; ++i) {
+		//setTimeout(() => {
+		    new Prop(mou.add(vec2(rand(-5, 5), rand(0, 5))));
+             //   }, rnd(0, 1000));
+            //}
         }
 
         if (keyWasPressed(69))
