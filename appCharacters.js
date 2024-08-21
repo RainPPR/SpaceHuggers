@@ -184,15 +184,15 @@ class Character extends GameObject
         this.weapon.triggerIsDown = this.holdingShoot && !this.dodgeTimer.active();
         if (!this.dodgeTimer.active())
         {
-            if (this.grenadeCount > 0 && this.pressingThrow && !this.wasPressingThrow && !this.grendeThrowTimer.active())
+            if (/*this.grenadeCount > 0 && */this.pressingThrow/* && !this.wasPressingThrow && !this.grendeThrowTimer.active()*/)
             {
                 // throw greande
-                --this.grenadeCount;
+                // --this.grenadeCount;
                 const grenade = new Grenade(this.pos);
                 grenade.velocity = this.velocity.add(vec2(this.getMirrorSign(),rand(.8,.7)).normalize(.25+rand(.02)));
                 grenade.angleVelocity = this.getMirrorSign() * rand(.8,.5);
                 playSound(sound_jump, this.pos);
-                this.grendeThrowTimer.set(1);
+                // this.grendeThrowTimer.set(1);
             }
             this.wasPressingThrow = this.pressingThrow;
         }
