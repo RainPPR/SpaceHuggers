@@ -184,7 +184,7 @@ class Character extends GameObject
         this.weapon.triggerIsDown = this.holdingShoot && !this.dodgeTimer.active();
         if (!this.dodgeTimer.active())
         {
-            if (/*this.grenadeCount > 0 && */this.pressingThrow /*&& !this.wasPressingThrow*/ /* && !this.grendeThrowTimer.active()*/)
+            if (this.grenadeCount > 0 && this.pressingThrow && !this.wasPressingThrow && !this.grendeThrowTimer.active())
             {
                 // throw greande
                 --this.grenadeCount;
@@ -192,7 +192,7 @@ class Character extends GameObject
                 grenade.velocity = this.velocity.add(vec2(this.getMirrorSign(),rand(.8,.7)).normalize(.25+rand(.02)));
                 grenade.angleVelocity = this.getMirrorSign() * rand(.8,.5);
                 playSound(sound_jump, this.pos);
-                //this.grendeThrowTimer.set(1);
+                this.grendeThrowTimer.set(1);
             }
             this.wasPressingThrow = this.pressingThrow;
         }
@@ -416,15 +416,14 @@ class Enemy extends Character
             this.canBurn = 0;
         }
 
-        if (this.isBig = randSeeded() < /*.05*/10)
+        if (this.isBig = randSeeded() < .05)
         {
             // chance of large enemy with extra health
-            this.size = this.size.scale(this.sizeScale = 10);
-            // health *= 2;
-            this.grenadeCount *= 100;
-            // this.maxVisionRange = 15;
-            this.maxVisionRange = 20;
-            // --levelEnemyCount;
+            this.size = this.size.scale(this.sizeScale = 1.3);
+            health *= 2;
+            this.grenadeCount *= 10;
+            this.maxVisionRange = 15;
+            --levelEnemyCount;
         }
 
         this.health = this.healthMax = health;
@@ -674,7 +673,7 @@ class Player extends Character
     { 
         super(pos);
 
-        this.grenadeCount = 300;
+        this.grenadeCount = 3;
         this.burnTime = 2;
         
         this.eyeColor = (new Color).setHSLA(-playerIndex*.6,1,.5);
