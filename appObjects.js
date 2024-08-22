@@ -449,14 +449,14 @@ class Weapon extends EngineObject
         {
             // slow down enemy bullets
             const speed = bulletSpeed * (this.parent.isPlayer ? 1 : .5);
-            const rate = 1 / (this.parent.isPlayer ? 2000 : 10);
+            const rate = 1 / (this.parent.isPlayer ? 1200 : 10);
             for(; this.fireTimeBuffer > 0; this.fireTimeBuffer -= rate)
             {
                 this.localAngle = -rand(.2,.15);
                 this.recoilTimer.set(rand(.4,.3));
                 const bullet = new Bullet(this.pos, this.parent);
                 const direction = vec2(Math.abs(this.getMirrorSign(speed)), 0);
-                bullet.velocity = direction.rotate(rand(0,spread));
+                bullet.velocity = direction.rotate(rand(-spread,spread));
 
                 this.shellEmitter.localAngle = -.8*this.getMirrorSign();
                 this.shellEmitter.emitParticle();
@@ -482,7 +482,8 @@ class Bullet extends EngineObject
         this.lastVelocity = this.velocity;
         this.setCollision();
 
-        this.damage = this.damping = 1;
+        this.damage = 2;
+        this.damping = 1;
         this.gravityScale = 0;
         this.attacker = attacker;
         this.team = attacker.team;

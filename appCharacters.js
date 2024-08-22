@@ -52,7 +52,7 @@ class Character extends GameObject
         let moveInput = this.moveInput.copy();
 
         // allow grabbing ladder at head or feet
-        let touchingLadder = 0;
+        /*let touchingLadder = 1;
         for(let y=2;y--;)
         {
             const testPos = this.pos.add(vec2(0, y + .1*this.moveInput.y - this.size.y*.5));
@@ -61,7 +61,7 @@ class Character extends GameObject
         }
         if (!touchingLadder)
             this.climbingLadder = 0;
-        else if (this.moveInput.y)
+        else */if (this.moveInput.y)
             this.climbingLadder = 1;
 
         if (this.dodgeTimer.active())
@@ -89,9 +89,9 @@ class Character extends GameObject
             this.groundTimer.unset();
             this.velocity = this.velocity.multiply(vec2(.85)).add(vec2(0,.02*moveInput.y));
 
-            const delta = (this.pos.x|0)+.5 - this.pos.x;
-            this.velocity.x += .02*delta*abs(moveInput.x ? 0:moveInput.y);
-            moveInput.x *= .2;
+            /*const delta = (this.pos.x|0)+.5 - this.pos.x;
+            this.velocity.x += .02*delta*abs(moveInput.x ? 0:moveInput.y);*/
+            // moveInput.x *= .2;
 
             // exit ladder if ground is below
             this.climbingLadder = moveInput.y >= 0 || getTileCollisionData(this.pos.subtract(vec2(0,1))) <= 0;
@@ -416,14 +416,14 @@ class Enemy extends Character
             this.canBurn = 0;
         }
 
-        if (this.isBig = randSeeded() < .05)
+        if (this.isBig = randSeeded() < .5)
         {
             // chance of large enemy with extra health
             this.size = this.size.scale(this.sizeScale = 1.3);
             health *= 2;
             this.grenadeCount *= 10;
             this.maxVisionRange = 15;
-            --levelEnemyCount;
+            ++levelEnemyCount;
         }
 
         this.health = this.healthMax = health;
