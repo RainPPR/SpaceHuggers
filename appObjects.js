@@ -482,12 +482,11 @@ class Bullet extends EngineObject
         this.lastVelocity = this.velocity;
         this.setCollision();
 
-        this.damage = 1e9;
+        this.damage = 2;
         this.damping = 1;
         this.gravityScale = 0;
         this.attacker = attacker;
-        // this.team = attacker.team;
-        this.team = rand(1, 2);
+        this.team = attacker.team;
         this.renderOrder = 1e9;
         this.range = 2;
     }
