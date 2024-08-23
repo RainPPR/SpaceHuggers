@@ -423,7 +423,7 @@ class Enemy extends Character
             health *= 2;
             this.grenadeCount *= 10;
             this.maxVisionRange = 15;
-            ++levelEnemyCount;
+            // ++levelEnemyCount;
         }
 
         this.health = this.healthMax = health;
