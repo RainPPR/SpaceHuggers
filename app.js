@@ -41,7 +41,7 @@ engineInit(
     if (debug)
     {
         randSeeded(randSeeded(randSeeded(randSeed = Date.now()))); // set random seed for debug mode stuf
-        if (keyWasPressed(81))
+        if (keyIsDown(81))
             new Enemy(mousePosWorld);
 
         if (keyWasPressed(84))
