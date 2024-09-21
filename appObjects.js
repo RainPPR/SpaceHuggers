@@ -372,9 +372,9 @@ class Grenade extends GameObject
     {
         super.update();
 
-        if (this.getAliveTime() > 3)
+        if (this.getAliveTime() > 0)
         {
-            explosion(this.pos, 3);
+            explosion(this.pos, 5);
             this.destroy();
             return;
         }

@@ -298,7 +298,7 @@ class Character extends GameObject
         if (!data)
             return;
 
-        if (data == tileType_ladder)
+        /*if (data == tileType_ladder)
         {
             if (pos.y + 1 > this.lastPos.y - this.size.y*.5)
                 return;
@@ -311,11 +311,11 @@ class Character extends GameObject
 
             // allow standing on top of ladders
             return !this.climbingLadder;
-        }
+        }*/
 
         // break blocks above
         const d = pos.y - this.pos.y;
-        if (!this.climbingLadder && this.velocity.y > .1 && d > 0 && d < this.size.y*.5)
+        //if (!this.climbingLadder && this.velocity.y > .1 && d > 0 && d < this.size.y*.5)
         {
             if (destroyTile(pos))
             {
