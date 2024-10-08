@@ -44,9 +44,9 @@ engineInit(
         if (keyIsDown(81))
             new Enemy(mousePosWorld);
 
-        if (keyWasPressed(84))
+        if (keyIsDown(84))
         {
-            //for(let i=30;i--;)
+            for(let i=30;i--;)
                 new Prop(mousePosWorld);
         }
 
