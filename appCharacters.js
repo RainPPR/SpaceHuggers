@@ -75,7 +75,7 @@ class Character extends GameObject
             // apply damage to enemies when rolling
             forEachObject(this.pos, this.size, (o)=>
             {
-                if (o.isCharacter && /*o.team != this.team &&*/ !o.isDead())
+                if (o.isCharacter && o.team != this.team && !o.isDead())
                     o.damage(1, this);
             });
         }
