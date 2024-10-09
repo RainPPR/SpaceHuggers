@@ -43,6 +43,15 @@ engineInit(
         randSeeded(randSeeded(randSeeded(randSeed = Date.now()))); // set random seed for debug mode stuf
         if (keyIsDown(81))
             new Enemy(mousePosWorld);
+        if (keyWasPressed(71)) {
+            const pos = mousePosWorld;
+            for(let i=100;i--;)
+		new Enemy(pos.add(vec2(rand(-1, 1), rand(-1, 1))));
+            setTimeout(function() {
+		explosion(pos, 10);
+            }, 400);
+            
+        }
 
         if (keyIsDown(84))
         {

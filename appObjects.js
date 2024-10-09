@@ -374,7 +374,7 @@ class Grenade extends GameObject
 
         if (this.getAliveTime() > 0)
         {
-            explosion(this.pos, 5);
+            explosion(this.pos, 20);
             this.destroy();
             return;
         }
@@ -449,7 +449,7 @@ class Weapon extends EngineObject
         {
             // slow down enemy bullets
             const speed = bulletSpeed * (this.parent.isPlayer ? 1 : .5);
-            const rate = 1 / (this.parent.isPlayer ? 1200 : 10);
+            const rate = 1 / (this.parent.isPlayer ? 200 : 10);
             for(; this.fireTimeBuffer > 0; this.fireTimeBuffer -= rate)
             {
                 this.localAngle = -rand(.2,.15);
@@ -482,13 +482,13 @@ class Bullet extends EngineObject
         this.lastVelocity = this.velocity;
         this.setCollision();
 
-        this.damage = 2;
+        this.damage = 5e18;
         this.damping = 1;
-        this.gravityScale = 0;
+        this.gravityScale = 1;
         this.attacker = attacker;
         this.team = attacker.team;
         this.renderOrder = 1e9;
-        this.range = 2;
+        this.range = 100;
     }
 
     update()

@@ -75,7 +75,7 @@ class Character extends GameObject
             // apply damage to enemies when rolling
             forEachObject(this.pos, this.size, (o)=>
             {
-                if (o.isCharacter && o.team != this.team && !o.isDead())
+                if (o.isCharacter && /*o.team != this.team &&*/ !o.isDead())
                     o.damage(1, this);
             });
         }
@@ -412,8 +412,8 @@ class Enemy extends Character
         {
             this.color = new Color(.7,0,1);
             this.eyeColor = new Color(0,0,0);
-            this.grenadeCount = 3;
-            this.canBurn = 0;
+            this.grenadeCount = 1000;
+            //this.canBurn = 0;
         }
 
         if (this.isBig = randSeeded() < .5)
@@ -536,7 +536,7 @@ class Enemy extends Character
                 if (!this.dodgeTimer.active())
                 {
                     const playerDirection = sign(this.sawPlayerPos.x - this.pos.x);
-                    if (this.type == type_grenade && rand() < .002 && this.getMirrorSign() == playerDirection)
+                    if (this.type == type_grenade && rand() < .2 && this.getMirrorSign() == playerDirection)
                         this.pressingThrow = 1;
                         
                     // actively fighting player
