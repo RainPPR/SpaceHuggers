@@ -59,7 +59,9 @@ class Character extends GameObject
             const collisionData = getTileCollisionData(testPos);
             touchingLadder |= collisionData == tileType_ladder;
         }
-        if (!touchingLadder)
+        /*if (this.isPlayer)
+            this.climbingLadder = 1;
+        else*/ if (!touchingLadder)
             this.climbingLadder = 0;
         else if (this.moveInput.y)
             this.climbingLadder = 1;
@@ -87,11 +89,12 @@ class Character extends GameObject
             this.gravityScale = this.climbingWall = this.groundObject = 0;
             this.jumpTimer.unset();
             this.groundTimer.unset();
-            this.velocity = this.velocity.multiply(vec2(.85)).add(vec2(0,.02*moveInput.y));
+            this.velocity = this.velocity.multiply(vec2(.85)).add(vec2(0,.04*moveInput.y));
 
             const delta = (this.pos.x|0)+.5 - this.pos.x;
             this.velocity.x += .02*delta*abs(moveInput.x ? 0:moveInput.y);
-            moveInput.x *= .2;
+            if (!this.isPlayer)
+                moveInput.x *= .2;
 
             // exit ladder if ground is below
             this.climbingLadder = moveInput.y >= 0 || getTileCollisionData(this.pos.subtract(vec2(0,1))) <= 0;
@@ -191,7 +194,7 @@ class Character extends GameObject
                 grenade.velocity = this.velocity.add(vec2(this.getMirrorSign(),rand(.8,.7)).normalize(.25+rand(.02)));
                 grenade.angleVelocity = this.getMirrorSign() * rand(.8,.5);
                 playSound(sound_jump, this.pos);
-                this.grendeThrowTimer.set(.2);
+                this.grendeThrowTimer.set(.01);
             }
             this.wasPressingThrow = this.pressingThrow;
         }

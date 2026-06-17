@@ -372,9 +372,9 @@ class Grenade extends GameObject
     {
         super.update();
 
-        if (this.getAliveTime() > 3)
+        if (this.getAliveTime() > 5)
         {
-            explosion(this.pos, 3);
+            explosion(this.pos, 5);
             this.destroy();
             return;
         }
@@ -435,9 +435,9 @@ class Weapon extends EngineObject
     {
         super.update();
 
-        const fireRate = 8;
+        const fireRate = 100;
         const bulletSpeed = .5;
-        const spread = .1;
+        const spread = .01;
 
         this.mirror = this.parent.mirror;
         this.fireTimeBuffer += timeDelta;
@@ -487,7 +487,7 @@ class Bullet extends EngineObject
         this.attacker = attacker;
         this.team = attacker.team;
         this.renderOrder = 1e9;
-        this.range = 8;
+        this.range = 20;
     }
 
     update()
