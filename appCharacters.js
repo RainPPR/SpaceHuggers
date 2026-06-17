@@ -184,15 +184,14 @@ class Character extends GameObject
         this.weapon.triggerIsDown = this.holdingShoot && !this.dodgeTimer.active();
         if (!this.dodgeTimer.active())
         {
-            if (this.grenadeCount > 0 && this.pressingThrow && !this.wasPressingThrow && !this.grendeThrowTimer.active())
+            if (this.pressingThrow && !this.grendeThrowTimer.active())
             {
                 // throw greande
-                --this.grenadeCount;
                 const grenade = new Grenade(this.pos);
                 grenade.velocity = this.velocity.add(vec2(this.getMirrorSign(),rand(.8,.7)).normalize(.25+rand(.02)));
                 grenade.angleVelocity = this.getMirrorSign() * rand(.8,.5);
                 playSound(sound_jump, this.pos);
-                this.grendeThrowTimer.set(1);
+                this.grendeThrowTimer.set(.2);
             }
             this.wasPressingThrow = this.pressingThrow;
         }
@@ -767,7 +766,7 @@ class Player extends Character
         this.moveInput.y = isUsingGamepad || this.playerIndex ? gamepadStick(0, this.playerIndex).y : keyIsDown(38) - keyIsDown(40);
         
         // jump
-        this.holdingJump = (!this.playerIndex && keyIsDown(38)) || gamepadIsDown(0, this.playerIndex);
+        this.holdingJump = (!this.playerIndex && (keyIsDown(38) || keyIsDown(32))) || gamepadIsDown(0, this.playerIndex);
         if (!this.holdingJump)
             this.pressedJumpTimer.unset();
         else if (!this.wasHoldingJump || this.climbingWall)
