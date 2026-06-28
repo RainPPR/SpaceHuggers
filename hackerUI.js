@@ -52,7 +52,10 @@
         { id: 'superSpeed', label: 'Super Speed' },
         { id: 'infiniteJump', label: 'Infinite Jump' },
         { id: 'highBulletSpeed', label: 'High Bullet Speed' },
-        { id: 'oneHitKill', label: 'One Hit Kill' }
+        { id: 'oneHitKill', label: 'One Hit Kill' },
+        { id: 'alwaysClimb', label: 'Always Climb' },
+        { id: 'infiniteLives', label: 'Infinite Lives' },
+        { id: 'invisible', label: 'Invisible' }
     ];
 
     hacks.forEach(hack => {

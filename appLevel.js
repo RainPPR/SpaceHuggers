@@ -482,7 +482,7 @@ function applyArtToLevel()
 
 function nextLevel()
 {
-    playerLives += 4; // three for beating a level plus 1 for respawning
+    if (!hackerSettings.infiniteLives) playerLives += 4; // three for beating a level plus 1 for respawning
     levelEnemyCount = 15 + min(level * 30, 300);
     ++level;
     levelSeed = randSeed = rand(1e9)|0;

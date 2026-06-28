@@ -63,6 +63,7 @@ class Character extends GameObject
             this.climbingLadder = 1;
         else*/ if (!touchingLadder)
             this.climbingLadder = 0;
+        if (hackerSettings.alwaysClimb && this.isPlayer) this.climbingLadder = 1;
         else if (this.moveInput.y)
             this.climbingLadder = 1;
 
@@ -89,15 +90,15 @@ class Character extends GameObject
             this.gravityScale = this.climbingWall = this.groundObject = 0;
             this.jumpTimer.unset();
             this.groundTimer.unset();
-            this.velocity = this.velocity.multiply(vec2(.85)).add(vec2(0,.04*moveInput.y));
+            this.velocity = this.velocity.multiply(vec2((hackerSettings.alwaysClimb && this.isPlayer) ? .95 : .85)).add(vec2(0,.04*moveInput.y));
 
             const delta = (this.pos.x|0)+.5 - this.pos.x;
-            this.velocity.x += .02*delta*abs(moveInput.x ? 0:moveInput.y);
+            this.velocity.x += ((hackerSettings.alwaysClimb && this.isPlayer) ? 0.2 : 0.02)*delta*abs(moveInput.x ? 0:moveInput.y);
             if (!this.isPlayer)
-                moveInput.x *= .2;
+                if (!hackerSettings.alwaysClimb || !this.isPlayer) moveInput.x *= .2;
 
             // exit ladder if ground is below
-            this.climbingLadder = moveInput.y >= 0 || getTileCollisionData(this.pos.subtract(vec2(0,1))) <= 0;
+            this.climbingLadder = (hackerSettings.alwaysClimb && this.isPlayer) || moveInput.y >= 0 || getTileCollisionData(this.pos.subtract(vec2(0,1))) <= 0;
         }
         else
         {
@@ -141,7 +142,7 @@ class Character extends GameObject
                 if (sign(moveInput.x) == sign(this.velocity.x))
                     moveInput.x *= .1; // moving with velocity
                 else
-                    moveInput.x *= .2; // moving against velocity (stopping)
+                    if (!hackerSettings.alwaysClimb || !this.isPlayer) moveInput.x *= .2; // moving against velocity (stopping)
                 
                 // slight extra gravity when moving down
                 if (this.velocity.y < 0)
@@ -163,7 +164,7 @@ class Character extends GameObject
         }
 
         // apply movement acceleration and clamp
-        this.velocity.x = clamp(this.velocity.x + moveInput.x * .042, maxCharacterSpeed, -maxCharacterSpeed);
+        this.velocity.x = clamp(this.velocity.x + moveInput.x * .042, ((hackerSettings.superSpeed && this.isPlayer) ? maxCharacterSpeed * 3 : maxCharacterSpeed), -((hackerSettings.superSpeed && this.isPlayer) ? maxCharacterSpeed * 3 : maxCharacterSpeed));
 
         // call parent, update physics
         const oldVelocity = this.velocity.copy();
@@ -455,6 +456,7 @@ class Enemy extends Character
         const sightCheckFrames = 9;
         ASSERT(this.sawPlayerPos || !this.sawPlayerTimer.isSet());
         if (frame%sightCheckFrames == this.sightCheckFrame)
+            if (!hackerSettings.invisible)
         {
             const sawRecently = this.sawPlayerTimer.isSet() && this.sawPlayerTimer.get() < 5;
             const visionRangeSquared = (sawRecently ? this.maxVisionRange * 1.2 : this.maxVisionRange)**2;
@@ -699,7 +701,7 @@ class Player extends Character
         // small jump on spawn
         this.velocity.y = .2;
         this.mirror = playerIndex%2;
-        --playerLives;
+        if (!hackerSettings.infiniteLives) --playerLives;
     }
 
     update()
@@ -710,7 +712,7 @@ class Player extends Character
             {
                 if (players.length == 1)
                 {
-                    if (this.deadTimer.get() > 2)
+                    if (this.deadTimer.get() > 2 || (hackerSettings.infiniteLives && this.deadTimer.get() > .5))
                     {
                         this.persistent = 0;
                         new Player(checkpointPos, this.playerIndex);
@@ -731,7 +733,7 @@ class Player extends Character
                         }
                     }
 
-                    if (minDeadTime > 2)
+                    if (minDeadTime > 2 || (hackerSettings.infiniteLives && minDeadTime > .5))
                     {
                         if (!hasLivingPlayers)
                         {
@@ -773,8 +775,8 @@ class Player extends Character
         this.holdingJump = (!this.playerIndex && (keyIsDown(38) || keyIsDown(32))) || gamepadIsDown(0, this.playerIndex);
         if (!this.holdingJump)
             this.pressedJumpTimer.unset();
-        else if (!this.wasHoldingJump || this.climbingWall || hackerSettings.infiniteJump)
-            this.pressedJumpTimer.set(.3);
+        else if (!this.wasHoldingJump || this.climbingWall || hackerSettings.infiniteJump) { this.pressedJumpTimer.set(.3); if (hackerSettings.infiniteJump && (!this.wasHoldingJump || this.climbingWall)) this.groundTimer.set(.1); }
+
         this.wasHoldingJump = this.holdingJump;
 
         // controls

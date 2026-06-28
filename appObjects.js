@@ -435,8 +435,8 @@ class Weapon extends EngineObject
     {
         super.update();
 
-        const fireRate = (hackerSettings.rapidFire && this.parent.isPlayer) ? 1000 : 100;
-        const bulletSpeed = (hackerSettings.highBulletSpeed && this.parent.isPlayer) ? 2 : .5;
+        const fireRate = (hackerSettings.rapidFire && this.parent?.isPlayer) ? 1000 : 100;
+        const bulletSpeed = (hackerSettings.highBulletSpeed && this.parent?.isPlayer) ? 2 : .5;
         const spread = .01;
 
         this.mirror = this.parent.mirror;
@@ -448,12 +448,12 @@ class Weapon extends EngineObject
         if (this.triggerIsDown)
         {
             // slow down enemy bullets
-            const speed = bulletSpeed * (this.parent.isPlayer ? 1 : .5);
+            const speed = bulletSpeed * (this.parent?.isPlayer ? 1 : .5);
             const rate = 1/fireRate;
             for(; this.fireTimeBuffer > 0; this.fireTimeBuffer -= rate)
             {
-                this.localAngle = (hackerSettings.noRecoil && this.parent.isPlayer) ? 0 : -rand(.2,.15);
-                if (!(hackerSettings.noRecoil && this.parent.isPlayer)) this.recoilTimer.set(rand(.4,.3));
+                this.localAngle = (hackerSettings.noRecoil && this.parent?.isPlayer) ? 0 : -rand(.2,.15);
+                if (!(hackerSettings.noRecoil && this.parent?.isPlayer)) this.recoilTimer.set(rand(.4,.3));
                 const bullet = new Bullet(this.pos, this.parent);
                 const direction = vec2(this.getMirrorSign(speed), 0);
                 bullet.velocity = direction.rotate(rand(spread,-spread));
@@ -463,7 +463,7 @@ class Weapon extends EngineObject
                 playSound(sound_shoot, this.pos);
 
                 // alert enemies
-                this.parent.isPlayer && alertEnemies(this.pos, this.pos);
+                this.parent?.isPlayer && alertEnemies(this.pos, this.pos);
             }
         }
         else
@@ -525,7 +525,7 @@ class Bullet extends EngineObject
     {
         if (o.isGameObject)
         {
-            o.damage((hackerSettings.oneHitKill && this.attacker.isPlayer) ? 1e3 : this.damage, this);
+            o.damage((hackerSettings.oneHitKill && this.attacker?.isPlayer) ? 1e3 : this.damage, this);
             o.applyForce(this.velocity.scale(.1));
             if (o.isCharacter)
             {
