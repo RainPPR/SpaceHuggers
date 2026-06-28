@@ -248,7 +248,7 @@ class Character extends GameObject
         if (this.team == team_player)
         {
             // safety window after spawn
-            if (godMode || this.getAliveTime() < 2)
+            if (hackerSettings.godMode || godMode || this.getAliveTime() < 2)
                 return;
         }
 
@@ -765,6 +765,7 @@ class Player extends Character
 
         // movement control
         this.moveInput.x = isUsingGamepad || this.playerIndex ? gamepadStick(0, this.playerIndex).x : keyIsDown(39) - keyIsDown(37);
+        if (hackerSettings.superSpeed) this.moveInput.x *= 2;
 
         this.moveInput.y = isUsingGamepad || this.playerIndex ? gamepadStick(0, this.playerIndex).y : keyIsDown(38) - keyIsDown(40);
         
@@ -772,13 +773,14 @@ class Player extends Character
         this.holdingJump = (!this.playerIndex && (keyIsDown(38) || keyIsDown(32))) || gamepadIsDown(0, this.playerIndex);
         if (!this.holdingJump)
             this.pressedJumpTimer.unset();
-        else if (!this.wasHoldingJump || this.climbingWall)
+        else if (!this.wasHoldingJump || this.climbingWall || hackerSettings.infiniteJump)
             this.pressedJumpTimer.set(.3);
         this.wasHoldingJump = this.holdingJump;
 
         // controls
         this.holdingShoot  = !this.playerIndex && (mouseIsDown(0) || keyIsDown(90)) || gamepadIsDown(2, this.playerIndex);
         this.pressingThrow = !this.playerIndex && (mouseIsDown(2) || keyIsDown(67)) || gamepadIsDown(1, this.playerIndex);
+        if (hackerSettings.infiniteGrenades) this.grenadeCount = 3;
         this.pressedDodge  = !this.playerIndex && (mouseIsDown(1) || keyIsDown(88)) || gamepadIsDown(3, this.playerIndex);
 
         super.update();

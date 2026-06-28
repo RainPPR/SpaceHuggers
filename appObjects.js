@@ -87,13 +87,13 @@ class GameObject extends EngineObject
         if (!this.canBurn || this.burnTimer.isSet() || this.extinguishTimer.active())
             return;
 
-        if (godMode && this.isPlayer)
+        if ((hackerSettings.godMode || godMode) && this.isPlayer)
             return;
 
         if (this.team == team_player)
         {
             // safety window after spawn
-            if (godMode || this.getAliveTime() < 2)
+            if (hackerSettings.godMode || godMode || this.getAliveTime() < 2)
                 return;
         }
 
@@ -435,8 +435,8 @@ class Weapon extends EngineObject
     {
         super.update();
 
-        const fireRate = 100;
-        const bulletSpeed = .5;
+        const fireRate = (hackerSettings.rapidFire && this.parent.isPlayer) ? 1000 : 100;
+        const bulletSpeed = (hackerSettings.highBulletSpeed && this.parent.isPlayer) ? 2 : .5;
         const spread = .01;
 
         this.mirror = this.parent.mirror;
@@ -452,8 +452,8 @@ class Weapon extends EngineObject
             const rate = 1/fireRate;
             for(; this.fireTimeBuffer > 0; this.fireTimeBuffer -= rate)
             {
-                this.localAngle = -rand(.2,.15);
-                this.recoilTimer.set(rand(.4,.3));
+                this.localAngle = (hackerSettings.noRecoil && this.parent.isPlayer) ? 0 : -rand(.2,.15);
+                if (!(hackerSettings.noRecoil && this.parent.isPlayer)) this.recoilTimer.set(rand(.4,.3));
                 const bullet = new Bullet(this.pos, this.parent);
                 const direction = vec2(this.getMirrorSign(speed), 0);
                 bullet.velocity = direction.rotate(rand(spread,-spread));
@@ -525,7 +525,7 @@ class Bullet extends EngineObject
     {
         if (o.isGameObject)
         {
-            o.damage(this.damage, this);
+            o.damage((hackerSettings.oneHitKill && this.attacker.isPlayer) ? 1e3 : this.damage, this);
             o.applyForce(this.velocity.scale(.1));
             if (o.isCharacter)
             {
