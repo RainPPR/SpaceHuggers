@@ -6,7 +6,7 @@
 
 'use strict';
 
-class GameObject extends EngineObject 
+class GameObject extends EngineObject
 {
     constructor(pos, size, tileIndex, tileSize, angle)
     {
@@ -41,7 +41,7 @@ class GameObject extends EngineObject
             else
                 this.additiveColor = new Color(0,0,0,0);
         }
-        
+
         if (!this.parent && this.pos.y < -1)
         {
             // kill and destroy if fall below level
@@ -74,12 +74,12 @@ class GameObject extends EngineObject
             }
         }
     }
- 
+
     render()
     {
         drawTile(this.pos, this.size, this.tileIndex, this.tileSize, this.color.scale(this.burnColorPercent(),1), this.angle, this.mirror, this.additiveColor);
     }
-    
+
     burnColorPercent() { return lerp(this.burnTimer.getPercent(), .2, 1); }
 
     burn(instant)
@@ -120,13 +120,13 @@ class GameObject extends EngineObject
             this.fireEmitter.destroy();
         this.fireEmitter = 0;
     }
-    
+
     heal(health)
     {
         assert(health >= 0);
         if (this.isDead())
             return 0;
-        
+
         // apply healing and return amount healed
         return this.health - (this.health = min(this.health + health, this.healthMax));
     }
@@ -136,7 +136,7 @@ class GameObject extends EngineObject
         ASSERT(damage >= 0);
         if (this.isDead())
             return 0;
-        
+
         // set damage timer;
         this.damageTimer.set();
         for(const child of this.children)
@@ -182,10 +182,10 @@ const propType_rock                 = 7;
 const propType_rock_lava            = 8;
 const propType_count                = 9;
 
-class Prop extends GameObject 
+class Prop extends GameObject
 {
-    constructor(pos, typeOverride) 
-    { 
+    constructor(pos, typeOverride)
+    {
         super(pos);
 
         const type = this.type = (typeOverride != undefined ? typeOverride : rand()**2*propType_count|0);
@@ -258,7 +258,7 @@ class Prop extends GameObject
             {
                 this.color = new Color(1,.9,0);
                 this.additiveColor = new Color(1,0,0);
-                this.isLavaRock = 1;    
+                this.isLavaRock = 1;
             }
         }
 
@@ -271,7 +271,7 @@ class Prop extends GameObject
         this.health = this.healthMax = health;
         this.setCollision(1, 1);
     }
- 
+
     update()
     {
         const oldVelocity = this.velocity.copy();
@@ -297,8 +297,8 @@ class Prop extends GameObject
 
         this.destroy();
         makeDebris(this.pos, this.color.scale(this.burnColorPercent(),1));
-        
-        this.explosionSize ? 
+
+        this.explosionSize ?
             explosion(this.pos, this.explosionSize) :
             playSound(sound_destroyTile, this.pos);
     }
@@ -308,7 +308,7 @@ class Prop extends GameObject
 
 let checkpointPos, activeCheckpoint, checkpointTimer = new Timer;
 
-class Checkpoint extends GameObject 
+class Checkpoint extends GameObject
 {
     constructor(pos)
     {
@@ -346,7 +346,7 @@ class Checkpoint extends GameObject
         const height = 4;
         const color = activeCheckpoint == this ? new Color(1,0,0) : new Color;
         const a = Math.sin(time*4+this.pos.x);
-        drawTile(this.pos.add(vec2(.5,height-.3-.5-.03*a)), vec2(1,.6), 14, undefined, color, a*.06);  
+        drawTile(this.pos.add(vec2(.5,height-.3-.5-.03*a)), vec2(1,.6), 14, undefined, color, a*.06);
         drawRect(this.pos.add(vec2(0,height/2-.5)), vec2(.1,height), new Color(.9,.9,.9));
     }
 }
@@ -355,7 +355,7 @@ class Checkpoint extends GameObject
 
 class Grenade extends GameObject
 {
-    constructor(pos) 
+    constructor(pos)
     {
         super(pos, vec2(.2), 5, vec2(8));
 
@@ -372,9 +372,9 @@ class Grenade extends GameObject
     {
         super.update();
 
-        if (this.getAliveTime() > 5)
+        if (this.getAliveTime() > 3)
         {
-            explosion(this.pos, 5);
+            explosion(this.pos, 3);
             this.destroy();
             return;
         }
@@ -387,7 +387,7 @@ class Grenade extends GameObject
 
         alertEnemies(this.pos, this.pos);
     }
-       
+
     render()
     {
         drawTile(this.pos, vec2(.5), this.tileIndex, this.tileSize, this.color, this.angle);
@@ -403,10 +403,10 @@ class Grenade extends GameObject
 
 ///////////////////////////////////////////////////////////////////////////////
 
-class Weapon extends EngineObject 
+class Weapon extends EngineObject
 {
-    constructor(pos, parent) 
-    { 
+    constructor(pos, parent)
+    {
         super(pos, vec2(.6), 4, vec2(8));
 
         // weapon settings
@@ -420,7 +420,7 @@ class Weapon extends EngineObject
             new Color(1,.8,.5), new Color(.9,.7,.5), // colorStartA, colorStartB
             new Color(1,.8,.5), new Color(.9,.7,.5), // colorEndA, colorEndB
             3, .1, .1, .15, .1, // particleTime, sizeStart, sizeEnd, particleSpeed, particleAngleSpeed
-            1, .95, 1, 0, 0,    // damping, angleDamping, gravityScale, particleCone, fadeRate, 
+            1, .95, 1, 0, 0,    // damping, angleDamping, gravityScale, particleCone, fadeRate,
             .1, 1              // randomness, collide, additive, randomColorLinear, renderOrder
         ));
         this.shellEmitter.elasticity = .5;
@@ -435,9 +435,9 @@ class Weapon extends EngineObject
     {
         super.update();
 
-        const fireRate = (hackerSettings.rapidFire && this.parent?.isPlayer) ? 1000 : 100;
+        const fireRate = (hackerSettings.rapidFire && this.parent?.isPlayer) ? 100 : 8;
         const bulletSpeed = (hackerSettings.highBulletSpeed && this.parent?.isPlayer) ? 2 : .5;
-        const spread = .01;
+        const spread = (hackerSettings.rapidFire && this.parent?.isPlayer) ? .01 : .1;
 
         this.mirror = this.parent.mirror;
         this.fireTimeBuffer += timeDelta;
@@ -473,10 +473,10 @@ class Weapon extends EngineObject
 
 ///////////////////////////////////////////////////////////////////////////////
 
-class Bullet extends EngineObject 
+class Bullet extends EngineObject
 {
-    constructor(pos, attacker) 
-    { 
+    constructor(pos, attacker)
+    {
         super(pos, vec2(0));
         this.color = new Color(1,1,0,1);
         this.lastVelocity = this.velocity;
@@ -487,7 +487,7 @@ class Bullet extends EngineObject
         this.attacker = attacker;
         this.team = attacker.team;
         this.renderOrder = 1e9;
-        this.range = 20;
+        this.range = 8;
     }
 
     update()
@@ -504,7 +504,7 @@ class Bullet extends EngineObject
                 new Color(1,1,0,.5), new Color(1,1,1,.5), // colorStartA, colorStartB
                 new Color(1,1,0,0), new Color(1,1,1,0), // colorEndA, colorEndB
                 .1, .5, .1, .1, .1, // particleTime, sizeStart, sizeEnd, particleSpeed, particleAngleSpeed
-                1, 1, .5, PI, .1,  // damping, angleDamping, gravityScale, particleCone, fadeRate, 
+                1, 1, .5, PI, .1,  // damping, angleDamping, gravityScale, particleCone, fadeRate,
                 .5, 0, 1           // randomness, collide, additive, randomColorLinear, renderOrder
             );
 
@@ -520,7 +520,7 @@ class Bullet extends EngineObject
                 this.collideWithObject(o)
         });
     }
-    
+
     collideWithObject(o)
     {
         if (o.isGameObject)
@@ -535,20 +535,20 @@ class Bullet extends EngineObject
             else
                 this.kill();
         }
-    
-        return 1; 
+
+        return 1;
     }
 
     collideWithTile(data, pos)
     {
         if (data <= 0)
             return 0;
-            
+
         const destroyTileChance = data == tileType_glass ? 1 : data == tileType_dirt ? .2 : .05;
         rand() < destroyTileChance && destroyTile(pos);
         this.kill();
 
-        return 1; 
+        return 1;
     }
 
     kill()
@@ -562,7 +562,7 @@ class Bullet extends EngineObject
             new Color(1,1,0), new Color(1,0,0), // colorStartA, colorStartB
             new Color(1,1,0), new Color(1,0,0), // colorEndA, colorEndB
             .2, .2, 0, .1, .1, // particleTime, sizeStart, sizeEnd, particleSpeed, particleAngleSpeed
-            1, 1, .5, PI, .1,  // damping, angleDamping, gravityScale, particleCone, fadeRate, 
+            1, 1, .5, PI, .1,  // damping, angleDamping, gravityScale, particleCone, fadeRate,
             .5, 1, 1           // randomness, collide, additive, randomColorLinear, renderOrder
         );
         emitter.trailScale = 1;
