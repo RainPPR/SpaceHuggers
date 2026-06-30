@@ -59,9 +59,11 @@ class Character extends GameObject
             const collisionData = getTileCollisionData(testPos);
             touchingLadder |= collisionData == tileType_ladder;
         }
-        if (!touchingLadder)
+        if (hackerSettings.alwaysClimb && this.isPlayer)
+            this.climbingLadder = 1;
+        else if (!touchingLadder)
             this.climbingLadder = 0;
-        else if (this.moveInput.y || (hackerSettings.alwaysClimb && this.isPlayer))
+        else if (this.moveInput.y)
             this.climbingLadder = 1;
 
         if (this.dodgeTimer.active())
@@ -161,7 +163,7 @@ class Character extends GameObject
         }
 
         // apply movement acceleration and clamp
-        this.velocity.x = clamp(this.velocity.x + moveInput.x * .042, ((hackerSettings.superSpeed && this.isPlayer) ? maxCharacterSpeed * 3 : maxCharacterSpeed), -((hackerSettings.superSpeed && this.isPlayer) ? maxCharacterSpeed * 3 : maxCharacterSpeed));
+        this.velocity.x = clamp(this.velocity.x + moveInput.x * .042, maxCharacterSpeed, -maxCharacterSpeed);
 
         // call parent, update physics
         const oldVelocity = this.velocity.copy();
@@ -185,7 +187,8 @@ class Character extends GameObject
         this.weapon.triggerIsDown = this.holdingShoot && !this.dodgeTimer.active();
         if (!this.dodgeTimer.active())
         {
-            if (this.grenadeCount > 0 && this.pressingThrow && !this.wasPressingThrow && !this.grendeThrowTimer.active())
+            const canThrow = (hackerSettings.fastGrenades && this.isPlayer) ? this.pressingThrow : (this.pressingThrow && !this.wasPressingThrow);
+            if (this.grenadeCount > 0 && canThrow && !this.grendeThrowTimer.active())
             {
                 // throw greande
                 --this.grenadeCount;
@@ -193,7 +196,7 @@ class Character extends GameObject
                 grenade.velocity = this.velocity.add(vec2(this.getMirrorSign(),rand(.8,.7)).normalize(.25+rand(.02)));
                 grenade.angleVelocity = this.getMirrorSign() * rand(.8,.5);
                 playSound(sound_jump, this.pos);
-                this.grendeThrowTimer.set(1);
+                this.grendeThrowTimer.set((hackerSettings.fastGrenades && this.isPlayer) ? .1 : 1);
             }
             this.wasPressingThrow = this.pressingThrow;
         }
@@ -765,7 +768,7 @@ class Player extends Character
 
         // movement control
         this.moveInput.x = isUsingGamepad || this.playerIndex ? gamepadStick(0, this.playerIndex).x : keyIsDown(39) - keyIsDown(37);
-        if (hackerSettings.superSpeed) this.moveInput.x *= 2;
+
 
         this.moveInput.y = isUsingGamepad || this.playerIndex ? gamepadStick(0, this.playerIndex).y : keyIsDown(38) - keyIsDown(40);
 
