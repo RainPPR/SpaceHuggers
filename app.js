@@ -16,7 +16,7 @@ const team_none = 0;
 const team_player = 1;
 const team_enemy = 2;
 
-const hackerSettings = { godMode: false, infiniteGrenades: false, rapidFire: false, superSpeed: false, infiniteJump: false, highBulletSpeed: false, oneHitKill: false, noRecoil: false, alwaysClimb: false, infiniteLives: false, invisible: false };
+const hackerSettings = { godMode: false, infiniteGrenades: false, rapidFire: false, infiniteJump: false, oneHitKill: false, noRecoil: false, alwaysClimb: false, infiniteLives: false, invisible: false, fastGrenades: false };
 
 let updateWindowSize, renderWindowSize, gameplayWindowSize;
 

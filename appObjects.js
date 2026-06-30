@@ -436,7 +436,7 @@ class Weapon extends EngineObject
         super.update();
 
         const fireRate = (hackerSettings.rapidFire && this.parent?.isPlayer) ? 100 : 8;
-        const bulletSpeed = (hackerSettings.highBulletSpeed && this.parent?.isPlayer) ? 2 : .5;
+        const bulletSpeed = .5;
         const spread = (hackerSettings.rapidFire && this.parent?.isPlayer) ? .01 : .1;
 
         this.mirror = this.parent.mirror;
