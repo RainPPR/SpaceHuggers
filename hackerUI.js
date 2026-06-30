@@ -12,6 +12,8 @@
             border: 1px solid #ff0;
             cursor: pointer;
             font-family: monospace;
+            outline: none;
+            user-select: none;
         }
         #hacker-panel {
             position: fixed;
@@ -28,9 +30,16 @@
         }
         .hacker-option {
             margin-bottom: 5px;
+            display: flex;
+            align-items: center;
         }
         .hacker-option input {
             margin-right: 10px;
+            cursor: pointer;
+            outline: none;
+        }
+        .hacker-option label {
+            cursor: pointer;
         }
     `;
     document.head.appendChild(style);
@@ -38,6 +47,7 @@
     const btn = document.createElement('button');
     btn.id = 'hacker-btn';
     btn.textContent = 'HACKS';
+    btn.tabIndex = -1;
     document.body.appendChild(btn);
 
     const panel = document.createElement('div');
@@ -64,7 +74,12 @@
         cb.type = 'checkbox';
         cb.id = 'hack-' + hack.id;
         cb.checked = hackerSettings[hack.id];
-        cb.onchange = () => { hackerSettings[hack.id] = cb.checked; };
+        cb.tabIndex = -1;
+        cb.onchange = () => {
+            hackerSettings[hack.id] = cb.checked;
+            cb.blur();
+            document.body.focus();
+        };
 
         const label = document.createElement('label');
         label.htmlFor = 'hack-' + hack.id;
@@ -75,7 +90,35 @@
         panel.appendChild(div);
     });
 
-    btn.onclick = () => {
-        panel.style.display = getComputedStyle(panel).display === 'none' ? 'block' : 'none';
+    const preventEngineInput = (e) => {
+        e.stopPropagation();
     };
+
+    [btn, panel].forEach(el => {
+        el.addEventListener('mousedown', preventEngineInput);
+        el.addEventListener('mouseup', preventEngineInput);
+        el.addEventListener('click', preventEngineInput);
+        el.addEventListener('mousemove', preventEngineInput);
+        el.addEventListener('contextmenu', preventEngineInput);
+        el.addEventListener('wheel', preventEngineInput);
+    });
+
+    btn.onclick = (e) => {
+        panel.style.display = getComputedStyle(panel).display === 'none' ? 'block' : 'none';
+        btn.blur();
+        document.body.focus();
+    };
+
+    // Ensure clicks on these elements don't keep focus
+    // and don't trigger game actions
+    const refocus = (e) => {
+        if (panel.contains(e.target) || btn.contains(e.target)) {
+            setTimeout(() => {
+                document.body.focus();
+            }, 0);
+        }
+    };
+    document.addEventListener('mousedown', refocus);
+    document.addEventListener('mouseup', refocus);
+
 })();
