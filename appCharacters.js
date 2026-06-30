@@ -91,7 +91,7 @@ class Character extends GameObject
 
             const delta = (this.pos.x|0)+.5 - this.pos.x;
             this.velocity.x += ((hackerSettings.alwaysClimb && this.isPlayer) ? 0.2 : 0.02)*delta*abs(moveInput.x ? 0:moveInput.y);
-            if (!hackerSettings.alwaysClimb || !this.isPlayer)
+            if (!this.isPlayer)
                 moveInput.x *= .2;
 
             // exit ladder if ground is below
