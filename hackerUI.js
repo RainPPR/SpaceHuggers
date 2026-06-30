@@ -110,7 +110,8 @@
     };
 
     // Ensure clicks on these elements don't keep focus
-    // and don't trigger game actions
+    // and don't trigger game actions.
+    // We use capture: true because the UI elements stop propagation.
     const refocus = (e) => {
         if (panel.contains(e.target) || btn.contains(e.target)) {
             setTimeout(() => {
@@ -118,7 +119,7 @@
             }, 0);
         }
     };
-    document.addEventListener('mousedown', refocus);
-    document.addEventListener('mouseup', refocus);
+    document.addEventListener('mousedown', refocus, true);
+    document.addEventListener('mouseup', refocus, true);
 
 })();
