@@ -48,7 +48,7 @@
         { id: 'godMode', label: 'God Mode' },
         { id: 'infiniteGrenades', label: 'Infinite Grenades' },
         { id: 'rapidFire', label: 'Rapid Fire' },
-        { id: "fastGrenades", label: "Fast Grenades" },
+        { id: 'fastGrenades', label: 'Fast Grenades' },
         { id: 'noRecoil', label: 'No Recoil' },
         { id: 'infiniteJump', label: 'Infinite Jump' },
         { id: 'oneHitKill', label: 'One Hit Kill' },
