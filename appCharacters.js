@@ -10,10 +10,10 @@ const aiEnable = 1;
 const debugAI = 0;
 const maxCharacterSpeed = .2;
 
-class Character extends GameObject 
+class Character extends GameObject
 {
-    constructor(pos, sizeScale = 1) 
-    { 
+    constructor(pos, sizeScale = 1)
+    {
         super(pos, vec2(.6,.95).scale(sizeScale), 32);
 
         this.health = this.healthMax = this.canBurn = this.isCharacter = 1;
@@ -37,8 +37,8 @@ class Character extends GameObject
         this.grendeThrowTimer = new Timer;
         this.setCollision();
     }
-    
-    update() 
+
+    update()
     {
         this.lastPos = this.pos.copy();
         this.gravityScale = 1; // reset default gravity (incase climbing ladder)
@@ -48,7 +48,7 @@ class Character extends GameObject
             super.update();
             return; // ignore offscreen objects
         }
-            
+
         let moveInput = this.moveInput.copy();
 
         // allow grabbing ladder at head or feet
@@ -59,12 +59,9 @@ class Character extends GameObject
             const collisionData = getTileCollisionData(testPos);
             touchingLadder |= collisionData == tileType_ladder;
         }
-        /*if (this.isPlayer)
-            this.climbingLadder = 1;
-        else*/ if (!touchingLadder)
+        if (!touchingLadder)
             this.climbingLadder = 0;
-        if (hackerSettings.alwaysClimb && this.isPlayer) this.climbingLadder = 1;
-        else if (this.moveInput.y)
+        else if (this.moveInput.y || (hackerSettings.alwaysClimb && this.isPlayer))
             this.climbingLadder = 1;
 
         if (this.dodgeTimer.active())
@@ -95,7 +92,7 @@ class Character extends GameObject
             const delta = (this.pos.x|0)+.5 - this.pos.x;
             this.velocity.x += ((hackerSettings.alwaysClimb && this.isPlayer) ? 0.2 : 0.02)*delta*abs(moveInput.x ? 0:moveInput.y);
             if (!this.isPlayer)
-                if (!hackerSettings.alwaysClimb || !this.isPlayer) moveInput.x *= .2;
+                moveInput.x *= .2;
 
             // exit ladder if ground is below
             this.climbingLadder = (hackerSettings.alwaysClimb && this.isPlayer) || moveInput.y >= 0 || getTileCollisionData(this.pos.subtract(vec2(0,1))) <= 0;
@@ -109,8 +106,8 @@ class Character extends GameObject
             if (this.groundTimer.active() && !this.dodgeTimer.active())
             {
                 // is on ground
-                if (this.pressedJumpTimer.active() 
-                    && !this.jumpTimer.active() 
+                if (this.pressedJumpTimer.active()
+                    && !this.jumpTimer.active()
                     && !this.preventJumpTimer.active())
                 {
                     // start jump
@@ -143,7 +140,7 @@ class Character extends GameObject
                     moveInput.x *= .1; // moving with velocity
                 else
                     if (!hackerSettings.alwaysClimb || !this.isPlayer) moveInput.x *= .2; // moving against velocity (stopping)
-                
+
                 // slight extra gravity when moving down
                 if (this.velocity.y < 0)
                     this.velocity.y += gravity*.2;
@@ -188,14 +185,15 @@ class Character extends GameObject
         this.weapon.triggerIsDown = this.holdingShoot && !this.dodgeTimer.active();
         if (!this.dodgeTimer.active())
         {
-            if (this.pressingThrow && !this.grendeThrowTimer.active())
+            if (this.grenadeCount > 0 && this.pressingThrow && !this.wasPressingThrow && !this.grendeThrowTimer.active())
             {
                 // throw greande
+                --this.grenadeCount;
                 const grenade = new Grenade(this.pos);
                 grenade.velocity = this.velocity.add(vec2(this.getMirrorSign(),rand(.8,.7)).normalize(.25+rand(.02)));
                 grenade.angleVelocity = this.getMirrorSign() * rand(.8,.5);
                 playSound(sound_jump, this.pos);
-                this.grendeThrowTimer.set(.01);
+                this.grendeThrowTimer.set(1);
             }
             this.wasPressingThrow = this.pressingThrow;
         }
@@ -210,7 +208,7 @@ class Character extends GameObject
         // randomly blink
         rand() < .005 && this.blinkTimer.set(rand(.2,.1));
     }
-       
+
     render()
     {
         if (!isOverlapping(this.pos, this.size, cameraPos, renderWindowSize))
@@ -268,7 +266,7 @@ class Character extends GameObject
         super.damage(damage, damagingObject);
     }
 
-    kill(damagingObject)                  
+    kill(damagingObject)
     {
         if (this.isDead())
             return 0;
@@ -278,7 +276,7 @@ class Character extends GameObject
             this.destroy();
             return 1;
         }
-        
+
         this.deadTimer.set();
         this.size = this.size.scale(.5);
 
@@ -295,7 +293,7 @@ class Character extends GameObject
         // move to back layer
         this.renderOrder = 1;
     }
-    
+
     collideWithTile(data, pos)
     {
         if (!data)
@@ -375,8 +373,8 @@ function alertEnemies(pos, playerPos)
 
 class Enemy extends Character
 {
-    constructor(pos) 
-    { 
+    constructor(pos)
+    {
         super(pos);
 
         this.team = team_enemy;
@@ -438,7 +436,7 @@ class Enemy extends Character
 
         this.sightCheckFrame = rand(9)|0;
     }
-    
+
     update()
     {
         if (!aiEnable || levelWarmup || this.isDead() || !this.inUpdateWindow())
@@ -489,7 +487,7 @@ class Enemy extends Character
         }
 
         this.pressedDodge = this.climbingWall = this.pressingThrow = 0;
-        
+
         if (this.burnTimer.isSet())
         {
             // burning, run around
@@ -501,7 +499,7 @@ class Enemy extends Character
                 this.pressedJumpTimer.set(.05);
                 this.holdJumpTimer.set(rand(.05));
             }
-            
+
             // random movement
             if (rand()<.05)
                 this.moveInput.x = randSign()*rand(.6, .3);
@@ -525,7 +523,7 @@ class Enemy extends Character
                 this.pressedJumpTimer.set(.1);
                 this.holdJumpTimer.set(rand(.2));
             }
-            
+
             const timeSinceSawPlayer = this.sawPlayerTimer.get();
             this.weapon.localAngle *= .8;
             if (this.reactionTimer.active())
@@ -536,13 +534,13 @@ class Enemy extends Character
             else if (timeSinceSawPlayer < 5)
             {
                 debugAI && debugRect(this.pos, this.size, '#f00');
-                    
+
                 if (!this.dodgeTimer.active())
                 {
                     const playerDirection = sign(this.sawPlayerPos.x - this.pos.x);
                     if (this.type == type_grenade && rand() < .002 && this.getMirrorSign() == playerDirection)
                         this.pressingThrow = 1;
-                        
+
                     // actively fighting player
                     if (rand()<.05)
                         this.facePlayerTimer.set(rand(2,.5));
@@ -553,7 +551,7 @@ class Enemy extends Character
                         this.pressedJumpTimer.set(.1);
                         this.holdJumpTimer.set(rand(.2));
                     }
-                    
+
                     // random movement
                     if (rand()<(this.isBig?.05:.02))
                         this.moveInput.x = 0;
@@ -561,7 +559,7 @@ class Enemy extends Character
                         this.moveInput.x = rand()<.6 ? playerDirection*rand(.5, .2) : -playerDirection*rand(.4, .2);
                     if (rand()<.03)
                         this.moveInput.y = rand()<.5 ? 0 : randSign()*rand(.4, .2);
-                
+
                     // random shoot
                     if (abs(this.sawPlayerPos.y - this.pos.y) < 4)
                     if (!this.shootTimer.isSet() || this.shootTimer.get() > 1)
@@ -592,7 +590,7 @@ class Enemy extends Character
                     this.pressedJumpTimer.set(.1);
                     this.holdJumpTimer.set(rand(.2));
                 }
-                
+
                 // random shoot
                 if (!this.shootTimer.isSet() || this.shootTimer.get() > 5)
                     rand() < .001 && this.shootTimer.set(rand(.2,.1));
@@ -673,13 +671,13 @@ class Enemy extends Character
 
 class Player extends Character
 {
-    constructor(pos, playerIndex=0) 
-    { 
+    constructor(pos, playerIndex=0)
+    {
         super(pos);
 
         this.grenadeCount = 3;
         this.burnTime = 2;
-        
+
         this.eyeColor = (new Color).setHSLA(-playerIndex*.6,1,.5);
         if (playerIndex)
         {
@@ -694,10 +692,10 @@ class Player extends Character
         this.walkSoundTime = 0;
         this.persistent = this.wasHoldingJump = this.canBlink = this.isPlayer = 1;
         this.team = team_player;
-        
+
         new Weapon(this.pos, this);
         players[playerIndex] = this;
-        
+
         // small jump on spawn
         this.velocity.y = .2;
         this.mirror = playerIndex%2;
@@ -770,13 +768,17 @@ class Player extends Character
         if (hackerSettings.superSpeed) this.moveInput.x *= 2;
 
         this.moveInput.y = isUsingGamepad || this.playerIndex ? gamepadStick(0, this.playerIndex).y : keyIsDown(38) - keyIsDown(40);
-        
+
         // jump
         this.holdingJump = (!this.playerIndex && (keyIsDown(38) || keyIsDown(32))) || gamepadIsDown(0, this.playerIndex);
         if (!this.holdingJump)
             this.pressedJumpTimer.unset();
-        else if (!this.wasHoldingJump || this.climbingWall || hackerSettings.infiniteJump) { this.pressedJumpTimer.set(.3); if (hackerSettings.infiniteJump && (!this.wasHoldingJump || this.climbingWall)) this.groundTimer.set(.1); }
-
+        else if (!this.wasHoldingJump || this.climbingWall || hackerSettings.infiniteJump)
+        {
+            this.pressedJumpTimer.set(.3);
+            if (hackerSettings.infiniteJump)
+                this.groundTimer.set(.1);
+        }
         this.wasHoldingJump = this.holdingJump;
 
         // controls
